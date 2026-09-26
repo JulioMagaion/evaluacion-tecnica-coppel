@@ -1,4 +1,4 @@
-package com.api.midd.tvmaze.config;
+package com.tvmaze.api.midd.config;
 
 
 import org.springframework.context.annotation.Bean;

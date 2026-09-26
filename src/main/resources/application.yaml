@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: midd-service-tvmaze
-  #spring:
-   # data:
-    #  mongodb:
-     #   uri:
-        #mongodb+srv://jcesarmagaion_db_user:8cRrr6tIBwLCD1Z5@cluster0.spedkc4.mongodb.net/?appName=Cluster0

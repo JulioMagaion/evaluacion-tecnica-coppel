@@ -1,4 +1,4 @@
-package com.api.midd.tvmaze;
+package com.tvmaze.api.midd;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

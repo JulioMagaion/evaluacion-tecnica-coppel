@@ -1,3 +1,3 @@
-package com.api.midd.tvmaze.dtos;
+package com.tvmaze.api.midd.dtos;
 
 public record TvMazeWebChannel(String name) {}

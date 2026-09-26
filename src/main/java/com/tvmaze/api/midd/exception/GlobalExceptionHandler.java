@@ -1,4 +1,4 @@
-package com.api.midd.tvmaze.exception;
+package com.tvmaze.api.midd.exception;
 
 
 

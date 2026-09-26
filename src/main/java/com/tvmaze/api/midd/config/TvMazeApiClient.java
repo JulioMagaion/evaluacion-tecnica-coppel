@@ -1,13 +1,14 @@
-package com.api.midd.tvmaze.config;
+package com.tvmaze.api.midd.config;
 
 
 
-import com.api.midd.tvmaze.dtos.TvMazeSearchResponse;
+import com.tvmaze.api.midd.dtos.TvMazeSearchResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class TvMazeApiClient {
@@ -25,6 +26,14 @@ public class TvMazeApiClient {
                         .path("/search/shows")
                         .queryParam("q", query)
                         .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+    }
+
+    //Nuevo metodo para consultar el endpoint B
+    public Map<String, Object> getShowById(Long showId) {
+        return restClient.get()
+                .uri("/shows/{show_id}", showId)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
