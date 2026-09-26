@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CommentDocument {
 
     @Id
-    private String id; // Mongo genera un String alfanumérico automáticamente
+    private String id;
     private Long showId;
     private String comment;
     private Integer rating;

@@ -4,14 +4,17 @@ package com.tvmaze.api.midd.services.Impl;
 
 
 import com.tvmaze.api.midd.config.TvMazeApiClient;
+import com.tvmaze.api.midd.dtos.CommentResponseDto;
 import com.tvmaze.api.midd.dtos.ShowResponseDto;
 import com.tvmaze.api.midd.models.ShowDocument;
+import com.tvmaze.api.midd.repositories.CommentRepository;
 import com.tvmaze.api.midd.repositories.ShowRepository;
 import com.tvmaze.api.midd.services.ShowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,11 +25,13 @@ public class ShowServiceImpl implements ShowService {
 
     private final TvMazeApiClient apiClient;
     private final ShowRepository showRepository;
+    private final CommentRepository commentRepository;
 
     //inyectamos por constructor
-    public ShowServiceImpl(TvMazeApiClient apiClient, ShowRepository showRepository) {
+    public ShowServiceImpl(TvMazeApiClient apiClient, ShowRepository showRepository, CommentRepository commentRepository) {
         this.apiClient = apiClient;
         this.showRepository = showRepository;
+        this.commentRepository = commentRepository;
     }
 
     // metodo de busqueda - Endpoint A
@@ -50,19 +55,22 @@ public class ShowServiceImpl implements ShowService {
                         channel = show.webChannel().name();
                     }
 
+                    //Update: Consultar comentarios en MongoDB para este show especifico
+                    List<CommentResponseDto> comments = commentRepository.findByShowId(show.id())
+                            .stream()
+                            .map(c -> new CommentResponseDto(c.getComment(), c.getRating()))
+                            .toList();
+
+                    //Update: agregar el arreglo de comentarios a la respuesta
                     return new ShowResponseDto(
-                            show.id(),
-                            show.name(),
-                            channel,
-                            show.summary(),
-                            show.genres()
+                            show.id(), show.name(), channel, show.summary(), show.genres(), comments
                     );
-                })
-                .toList();
+                }).toList();
     }
 
     // Busquda nueva por showId - Endpoint B
     public Map<String, Object> getShowById(Long showId) {
+        Map<String, Object> showData;
         log.info("Buscando showId con ID: {}", showId);
 
         //validar el "cache" en la bd de mongo
@@ -70,18 +78,31 @@ public class ShowServiceImpl implements ShowService {
 
         if (cachedShow.isPresent()) {
             log.info("ShowId {} encontrado en Mongo, Retornando caché...", showId);
-            return cachedShow.get().getData();
-        }
-
-        //si no lo encuentra, hay que consumir el API de TV-Maze
-        log.info("ShowId {} no encontrado en Mongo, Consumiendo API externa...", showId);
-        Map<String, Object> externalResponse = apiClient.getShowById(showId);
-
-        //guardar el resultado en Mongo antes de retornar
-        log.info("Guardando showId {} en Mongo para futuras consultas.", showId);
-        ShowDocument document = new ShowDocument(showId, externalResponse);
+            showData = cachedShow.get().getData();
+        } else {
+        log.info("Show {} no encontrado en Mongo. Consumiendo API externa...", showId);
+        showData = apiClient.getShowById(showId);
+        ShowDocument document = new ShowDocument(showId, showData);
         showRepository.save(document);
+    }
 
-        return externalResponse;
+    //Creamos un nuevo Map para evitar problemas de inmutabilidad
+        Map<String, Object> finalResponse = new HashMap<>(showData);
+
+        // Consultar los comentarios y agregarlos al objeto de retorno
+        List<Map<String, Object>> commentsList = commentRepository.findByShowId(showId)
+                .stream()
+                .map(c -> {
+                    Map<String, Object> commentMap = new HashMap<>();
+                    commentMap.put("comment", c.getComment());
+                    commentMap.put("rating", c.getRating());
+                    return commentMap;
+                })
+                .toList();
+
+        //Agregamos el arreglo de comentarios
+        finalResponse.put("comments", commentsList);
+
+        return finalResponse;
     }
 }

@@ -23,7 +23,7 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<Void> addComment(@Valid @RequestBody CommentRequestDto request) {
         commentService.saveComment(request);
-        // Retornamos el status de la petición 201 Createdcite: 1]
+        //Retornamos el status de la petición 201 Created
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

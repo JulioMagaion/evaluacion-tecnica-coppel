@@ -44,7 +44,7 @@ public class ShowController {
         //llamamos el servicio para obtener la información del show a partir de su Id
         Map<String, Object> response = showService.getShowById(showId);
 
-        // Retorna el objeto show completo[cite: 1]
+        // Retorna el objeto show completo
         return ResponseEntity.ok(response);
     }
 }

@@ -9,5 +9,6 @@ public record ShowResponseDto(
         String name,
         String channel,
         String summary,
-        List<String> genres
+        List<String> genres,
+        List<CommentResponseDto> comments // se agrega este nuevo atributo para la parte final
 ) {}

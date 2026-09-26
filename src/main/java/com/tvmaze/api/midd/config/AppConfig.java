@@ -12,8 +12,9 @@ public class AppConfig {
     @Bean
     public RestClient tvMazeRestClient() {
         //Configuramos la URL base indicada en los criterios
+        String urlBase = "https://api.tvmaze.com";
         return RestClient.builder()
-                .baseUrl("https://api.tvmaze.com")
+                .baseUrl(urlBase)
                 .build();
     }
 }

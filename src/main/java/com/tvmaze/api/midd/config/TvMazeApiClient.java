@@ -21,9 +21,10 @@ public class TvMazeApiClient {
 
     //puente de comunicación HTTP para construir la URL exacta
     public List<TvMazeSearchResponse> searchShows(String query) {
+        String path = "/search/shows";
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/search/shows")
+                        .path(path)
                         .queryParam("q", query)
                         .build())
                 .retrieve()
@@ -32,8 +33,9 @@ public class TvMazeApiClient {
 
     //Nuevo metodo para consultar el endpoint B
     public Map<String, Object> getShowById(Long showId) {
+        String uri = "/shows/{show_id}";
         return restClient.get()
-                .uri("/shows/{show_id}", showId)
+                .uri(uri, showId)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
